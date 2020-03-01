@@ -100,7 +100,7 @@ public class EntryRepository {
         entrySource);
     this.jdbcTemplate.batchUpdate("INSERT INTO category(category_order, entry_id, category_name)"
         + " VALUES(:category_order, :entry_id, :category_name)", categorySources);
-    // TODO INSERT tag table
+    this.jdbcTemplate.batchUpdate("INSERT INTO tag(tag_name) VALUES(:tag_name)", tagSources);
     this.jdbcTemplate.batchUpdate(
         "INSERT INTO entry_tag(entry_id, tag_name)" + " VALUES(:entry_id, :tag_name)", tagSources);
   }
@@ -121,6 +121,10 @@ public class EntryRepository {
     this.jdbcTemplate.batchUpdate("INSERT INTO category(category_order, entry_id, category_name)"
         + " VALUES(:category_order, :entry_id, :category_name)", categorySources);
     // TODO INSERT tag table
+    this.jdbcTemplate.batchUpdate("INSERT INTO tag (tag_name) VALUES (:tag_name)" //
+        + " ON CONFLICT ON CONSTRAINT tag_pkey" //
+        + " DO UPDATE SET tag_name = :tag_name" //
+        , tagSources);
     this.jdbcTemplate.batchUpdate(
         "INSERT INTO entry_tag(entry_id, tag_name)" + " VALUES(:entry_id, :tag_name)", tagSources);
   }

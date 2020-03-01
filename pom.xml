@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.2.0.M2</version>
+    <version>2.2.2.RELEASE</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
   <groupId>org.vagivagi.blog.api</groupId>
@@ -54,6 +54,11 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
+      <!-- for Flyway -->
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
@@ -71,7 +76,6 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>mockwebserver</artifactId>
-      <version>3.9.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -81,19 +85,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>com.microsoft.azure</groupId>
-        <artifactId>azure-webapp-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <configuration>
-          <resourceGroup>blog</resourceGroup>
-          <appName>${blog.author}-${project.artifactId}</appName>
-          <region>Japan East</region>
-          <pricingTier>F1</pricingTier>
-          <javaVersion>1.8</javaVersion>
-          <deploymentType>jar</deploymentType>
-        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -7,8 +7,7 @@ CREATE TABLE entry (
   last_modified_by   VARCHAR(128),
   last_modified_date DATETIME,
   PRIMARY KEY (entry_id)
-)
-  ENGINE = InnoDB;
+);
 
 
 CREATE TABLE category (
@@ -18,8 +17,7 @@ CREATE TABLE category (
   PRIMARY KEY (category_order, entry_id),
   FOREIGN KEY (entry_id) REFERENCES entry (entry_id)
     ON DELETE CASCADE
-)
-  ENGINE = InnoDB;
+);
 
  CREATE TABLE tag (
   tag_name VARCHAR(255) NOT NULL,
@@ -34,8 +32,7 @@ CREATE TABLE entry_tag (
     ON DELETE CASCADE,
   FOREIGN KEY (tag_name) REFERENCES tag (tag_name)
     ON DELETE CASCADE
-)
-  ENGINE = InnoDB;
+);
 
 CREATE INDEX entry_last_modified_date
   ON entry (last_modified_date);

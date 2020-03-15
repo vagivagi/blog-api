@@ -1,0 +1,16 @@
+applications:
+- name: blog-api
+  path: target/blog-api.jar
+  memory: 256M
+  instances: 1
+  routes:
+  - route: vagivagi-blog-api.cfapps.io
+  env:
+    BLOG_GITHUB_ACCESS_TOKEN: 
+    BLOG_GITHUB_WEBHOOK_SECRET: 
+    SERVER_TOMCAT_MAX_THREADS: 4
+    JAVA_OPTS: '-XX:ReservedCodeCacheSize=32M -Xss512k -XX:+PrintCodeCache'
+    JBP_CONFIG_OPEN_JDK_JRE: '[memory_calculator: {stack_threads: 24}]' # 4 (core) + 20 (etc)
+  services:
+    - blog-db
+    

@@ -1,6 +1,5 @@
 applications:
 - name: blog-api
-  path: target/blog-api.jar
   memory: 256M
   instances: 1
   routes:

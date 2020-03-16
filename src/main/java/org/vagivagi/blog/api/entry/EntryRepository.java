@@ -1,6 +1,7 @@
 package org.vagivagi.blog.api.entry;
 
 import static java.util.stream.Collectors.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,6 +73,9 @@ public class EntryRepository {
     source.addValues(clauseAndParams.params());
     List<Long> ids = this.entryIds(searchCriteria, clauseAndParams, source);
     source.addValue("entry_ids", ids);
+    if(ids.isEmpty()) {
+      return new ArrayList<Entry>();
+    }
     boolean excludeContent = searchCriteria.isExcludeContent();
     Map<EntryId, Tags> tagsMap = this.tagsMap(ids);
     List<Entry> entries = this.jdbcTemplate.query(this.sqlForEntries(excludeContent), source,

@@ -26,6 +26,10 @@ jobs:
       run: |
         set -e
         ./mvnw -V test
+    - name: mvn package
+      run: |
+        set -e
+        ./mvnw -V package -DskipTests=true
     - name: Pivotal Cloud Foundry (PCF) CLI
       uses: d3sandoval/cloud-foundry-action@1.1.1
       with: 
@@ -35,3 +39,5 @@ jobs:
         CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
         CF_TARGET_ORG: ${{ secrets.CF_TARGET_ORG }}
         CF_TARGET_SPACE: ${{ secrets.CF_TARGET_SPACE }}
+        BLOG_GITHUB_ACCESS_TOKEN: ${{ secrets.BLOG_GITHUB_ACCESS_TOKEN }}
+        BLOG_GITHUB_WEBHOOK_SECRET: ${{ secrets.BLOG_GITHUB_WEBHOOK_SECRET}}

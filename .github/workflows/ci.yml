@@ -28,3 +28,9 @@ jobs:
         ./mvnw -V test
     - name: Pivotal Cloud Foundry (PCF) CLI
       uses: d3sandoval/cloud-foundry-action@1.1.1
+      with: push ${{ secrets.APP_NAME}}
+      env: 
+        CF_USERNAME: ${{ secrets.CF_USERNAME }}
+        CF_PASSWORD: ${{ secrets.CF_PASSWORD }}
+        CF_TARGET_ORG: ${{ secrets.CF_TARGET_ORG }}
+        CF_TARGET_SPACE: ${{ secrets.CF_TARGET_SPACE }}

@@ -29,7 +29,7 @@ jobs:
     - name: Pivotal Cloud Foundry (PCF) CLI
       uses: d3sandoval/cloud-foundry-action@1.1.1
       with: 
-        args: push ${{ secrets.APP_NAME}}
+        args: 'push blog-api'
       env: 
         CF_USERNAME: ${{ secrets.CF_USERNAME }}
         CF_PASSWORD: ${{ secrets.CF_PASSWORD }}

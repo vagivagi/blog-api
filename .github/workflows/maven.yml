@@ -22,3 +22,6 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Pivotal Cloud Foundry (PCF) CLI
+      uses: d3sandoval/cloud-foundry-action@1.1.1
+

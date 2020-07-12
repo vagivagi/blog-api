@@ -1,0 +1,12 @@
+version: '3.2'
+services:
+    db:
+        image: postgres:latest
+        container_name: sb_db
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_DB : 'sb_db'
+            POSTGRES_USER: 'local' # DBのユーザー名（＝DB名）
+            POSTGRES_PASSWORD: 'pass' # DBのパスワード

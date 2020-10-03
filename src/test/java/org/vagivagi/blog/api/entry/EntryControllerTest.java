@@ -82,12 +82,9 @@ public class EntryControllerTest {
         .jsonPath("frontMatter.tags[2]").isEqualTo("c");
   }
 
-  // TODO mockからsqlでデータを作成するテスト形式に変更する
   @Test
-  @Ignore
   public void getEntries() throws Exception {
-    SearchCriteria criteria = SearchCriteria.builder().build();
-    given(entryRepository.findAll(criteria))
+    given(entryRepository.findAll(any(SearchCriteria.class)))
         .willReturn(Collections.singletonList(Fixtures.entry(new EntryId("100"))));
 
     this.webClient.get() //

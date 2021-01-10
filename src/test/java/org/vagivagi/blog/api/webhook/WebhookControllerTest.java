@@ -59,7 +59,7 @@ public class WebhookControllerTest {
 
     WebhookVerifier verifier = new WebhookVerifier("bar");
     this.webClient.post() //
-        .uri("/webhook") //
+        .uri("/api/webhook") //
         .bodyValue(body) //
         .accept(MediaType.APPLICATION_JSON) //
         .header("X-Hub-Signature", verifier.signature(body.toString())) //
@@ -90,7 +90,7 @@ public class WebhookControllerTest {
 
     WebhookVerifier verifier = new WebhookVerifier("bar");
     this.webClient.post() //
-        .uri("/webhook") //
+        .uri("/api/webhook") //
         .bodyValue(body) //
         .accept(MediaType.APPLICATION_JSON) //
         .header("X-Hub-Signature", verifier.signature(body.toString())) //
@@ -122,7 +122,7 @@ public class WebhookControllerTest {
 
     WebhookVerifier verifier = new WebhookVerifier("bar");
     this.webClient.post() //
-        .uri("/webhook") //
+        .uri("/api/webhook") //
         .bodyValue(body) //
         .accept(MediaType.APPLICATION_JSON) //
         .header("X-Hub-Signature", verifier.signature(body.toString())) //

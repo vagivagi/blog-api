@@ -31,7 +31,7 @@ public class EntryControllerTest {
   @Before
   public void setup() {
     this.webClient = WebTestClient.bindToServer() //
-        .baseUrl("http://localhost:" + port) //
+        .baseUrl("http://localhost:" + port+ "/api") //
         .build();
   }
 

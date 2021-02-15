@@ -1,0 +1,28 @@
+name: Heroku Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.11.10 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true
+          docker_build_args: |
+            BLOG_GITHUB_ACCESS_TOKEN
+            BLOG_GITHUB_WEBHOOK_SECRET
+            DATABASE_URL
+            SPRING_PROFILES_ACTIVE
+        env:
+          BLOG_GITHUB_ACCESS_TOKEN: ${{ secrets.BLOG_GITHUB_ACCESS_TOKEN }}
+          BLOG_GITHUB_WEBHOOK_SECRET : ${{ secrets.MY_SECRET_KEY }}
+          DATABASE_URL : ${{ secrets.DATABASE_URL }}
+          SPRING_PROFILES_ACTIVE : heroku

@@ -1,18 +1,42 @@
 package org.vagivagi.blog.api.entry;
 
-import am.ik.blog.entry.Entry;
-import am.ik.blog.entry.EntryId;
+import am.ik.blog.entry.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.vagivagi.blog.api.entry.criteria.SearchCriteria;
 
 import java.util.List;
+import java.util.Optional;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class EntryRepositoryTest {
-  private EntryRepository entryRepository;
+  @Autowired private EntryRepository entryRepository;
 
+  @Test
+  @Sql("/testfiles/test_data_entry.sql")
   public void findById() {
-    entryRepository.findById(new EntryId("1"), true);
+    Optional<Entry> entryOptional = entryRepository.findById(new EntryId("1"), true);
+    entryOptional.ifPresentOrElse(
+        entry -> {
+          assertAll(
+              "entry",
+              () -> assertThat(entry.getEntryId()).isEqualTo(new EntryId("1")),
+              () -> assertThat(entry.getFrontMatter().title()).isEqualTo(new Title("Title")),
+              () ->
+                  assertThat(entry.getFrontMatter().categories())
+                      .isEqualTo(new Categories(new Category("demo"), new Category("Hello"))));
+        },
+        () -> {
+          fail("entry is not found.");
+        });
   }
 
   public void entryIds() {

@@ -3,7 +3,7 @@ DELETE FROM tag;
 DELETE FROM category;
 DELETE FROM entry;
 
-INSERT INTO entry VALUES (1,'Title','Content','vagivagi',CURRENT_TIMESTAMP(),'vagivagi',CURRENT_TIMESTAMP());
+INSERT INTO entry VALUES (1,'Title','Content','author','2021-03-01T21:00:00','updater','2021-03-02T22:00:00');
 
 INSERT INTO category VALUES (0,1,'demo');
 

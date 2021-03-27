@@ -39,7 +39,7 @@ public class EntryRepositoryTest {
                     .findById(new EntryId("1"), false)
                     .ifPresentOrElse(
                             entry -> {
-                                this.assertAllForEntry(entry);
+                                assertAllForEntry(entry);
                                 assertThat(entry.getContent()).isEqualTo(new Content("Content"));
                             },
                             () -> {
@@ -53,7 +53,7 @@ public class EntryRepositoryTest {
                     .findById(new EntryId("1"), true)
                     .ifPresentOrElse(
                             entry -> {
-                                this.assertAllForEntry(entry);
+                                assertAllForEntry(entry);
                                 assertThat(entry.getContent()).isEqualTo(new Content(""));
                             },
                             () -> {
@@ -79,43 +79,6 @@ public class EntryRepositoryTest {
                             entry -> {
                                 fail("entry is found.");
                             });
-        }
-
-        private void assertAllForEntry(Entry entry) {
-            assertAll(
-                    "entry",
-                    () -> assertThat(entry.getEntryId()).isEqualTo(new EntryId("1")),
-                    () -> assertThat(entry.getFrontMatter().title()).isEqualTo(new Title("Title")),
-                    () ->
-                            assertThat(entry.getFrontMatter().categories())
-                                    .isEqualTo(new Categories(new Category("demo"), new Category("Hello"))),
-                    () ->
-                            assertThat(entry.getFrontMatter().tags())
-                                    .isEqualTo(new Tags(new Tag("blog"), new Tag("demo"))),
-                    () ->
-                            assertThat(entry.getFrontMatter().date().getValue())
-                                    .isEqualTo(
-                                            OffsetDateTime.of(LocalDateTime.of(2021, 3, 1, 21, 0, 0), ZoneOffset.UTC)),
-                    () ->
-                            assertThat(entry.getFrontMatter().updated().getValue())
-                                    .isEqualTo(
-                                            OffsetDateTime.of(LocalDateTime.of(2021, 3, 2, 22, 0, 0), ZoneOffset.UTC)),
-                    () ->
-                            assertThat(entry.getCreated())
-                                    .isEqualTo(
-                                            new Author(
-                                                    new Name("author"),
-                                                    new EventTime(
-                                                            OffsetDateTime.of(
-                                                                    LocalDateTime.of(2021, 3, 1, 21, 0, 0), ZoneOffset.UTC)))),
-                    () ->
-                            assertThat(entry.getUpdated())
-                                    .isEqualTo(
-                                            new Author(
-                                                    new Name("updater"),
-                                                    new EventTime(
-                                                            OffsetDateTime.of(
-                                                                    LocalDateTime.of(2021, 3, 2, 22, 0, 0), ZoneOffset.UTC)))));
         }
     }
 
@@ -146,9 +109,39 @@ public class EntryRepositoryTest {
                 + " ORDER BY e.last_modified_date DESC, e.entry_id DESC, c.category_order ASC");
     }
 
-    public void findAll() {
-        SearchCriteria searchCriteria = SearchCriteria.builder().build();
-        entryRepository.findAll(searchCriteria);
+    @Nested
+    @ExtendWith(SpringExtension.class)
+    @SpringBootTest
+    @Sql("/testfiles/test_data_entry.sql")
+    class findByAll {
+        @Test
+        public void success_exclude_content() {
+            SearchCriteria searchCriteria = SearchCriteria.builder().excludeContent(true).build();
+            List<Entry> entries = entryRepository.findAll(searchCriteria);
+            assertAll(
+                    () -> assertThat(entries).hasSize(2),
+                    () -> assertAllForEntry(entries.get(1)),
+                    () -> assertThat(entries.get(1).getContent()).isEqualTo(new Content(""))
+            );
+        }
+
+        @Test
+        public void success_include_content() {
+            SearchCriteria searchCriteria = SearchCriteria.builder().excludeContent(false).build();
+            List<Entry> entries = entryRepository.findAll(searchCriteria);
+            assertAll(
+                    () -> assertThat(entries).hasSize(2),
+                    () -> assertAllForEntry(entries.get(1)),
+                    () -> assertThat(entries.get(1).getContent()).isEqualTo(new Content("Content"))
+            );
+        }
+
+        @Test
+        public void not_found() {
+            SearchCriteria searchCriteria = SearchCriteria.builder().keyword("not found").build();
+            List<Entry> entries = entryRepository.findAll(searchCriteria);
+            assertThat(entries).hasSize(0);
+        }
     }
 
     public void create() {
@@ -167,5 +160,42 @@ public class EntryRepositoryTest {
 
     public void tagsMap() {
         entryRepository.tagsMap(List.of(1l));
+    }
+
+    private void assertAllForEntry(Entry entry) {
+        assertAll(
+                "entry",
+                () -> assertThat(entry.getEntryId()).isEqualTo(new EntryId("1")),
+                () -> assertThat(entry.getFrontMatter().title()).isEqualTo(new Title("Title")),
+                () ->
+                        assertThat(entry.getFrontMatter().categories())
+                                .isEqualTo(new Categories(new Category("demo"), new Category("Hello"))),
+                () ->
+                        assertThat(entry.getFrontMatter().tags())
+                                .isEqualTo(new Tags(new Tag("blog"), new Tag("demo"))),
+                () ->
+                        assertThat(entry.getFrontMatter().date().getValue())
+                                .isEqualTo(
+                                        OffsetDateTime.of(LocalDateTime.of(2021, 3, 1, 21, 0, 0), ZoneOffset.UTC)),
+                () ->
+                        assertThat(entry.getFrontMatter().updated().getValue())
+                                .isEqualTo(
+                                        OffsetDateTime.of(LocalDateTime.of(2021, 3, 2, 22, 0, 0), ZoneOffset.UTC)),
+                () ->
+                        assertThat(entry.getCreated())
+                                .isEqualTo(
+                                        new Author(
+                                                new Name("author"),
+                                                new EventTime(
+                                                        OffsetDateTime.of(
+                                                                LocalDateTime.of(2021, 3, 1, 21, 0, 0), ZoneOffset.UTC)))),
+                () ->
+                        assertThat(entry.getUpdated())
+                                .isEqualTo(
+                                        new Author(
+                                                new Name("updater"),
+                                                new EventTime(
+                                                        OffsetDateTime.of(
+                                                                LocalDateTime.of(2021, 3, 2, 22, 0, 0), ZoneOffset.UTC)))));
     }
 }

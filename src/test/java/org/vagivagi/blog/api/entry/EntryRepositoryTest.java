@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -27,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class EntryRepositoryTest {
     @Autowired
     private EntryRepository entryRepository;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Nested
     @ExtendWith(SpringExtension.class)
@@ -144,10 +147,50 @@ public class EntryRepositoryTest {
         }
     }
 
-    public void create() {
-        Entry entry = Entry.builder().build();
-        entryRepository.create(entry);
+    @Nested
+    @ExtendWith(SpringExtension.class)
+    @SpringBootTest
+    @Sql("/testfiles/test_data_entry.sql")
+    class create {
+        @Test
+        public void success() {
+            EventTime now = EventTime.now();
+            EventTime expectedNow = new EventTime(OffsetDateTime.from(now.getValue()).withOffsetSameLocal(ZoneOffset.UTC));
+            Entry entry = Entry.builder()
+                    .entryId(new EntryId("3"))
+                    .content(new Content("content3"))
+                    .frontMatter(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("tag3")), now, now))
+                    .created(new Author(new Name("author3"), now))
+                    .updated(new Author(new Name("updater3"), now))
+                    .build();
+            entryRepository.create(entry);
+            jdbcTemplate.query(
+                    "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                            + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                            + " WHERE e.entry_id = 3" + " ORDER BY c.category_order ASC",
+                    EntryExtractors.forEntry(false)) //
+                    .map(e -> {
+                        List<Tag> tags =
+                                jdbcTemplate.query("SELECT tag_name FROM entry_tag WHERE entry_id = 3",
+                                        (rs, i) -> new Tag(rs.getString("tag_name")));
+                        FrontMatter fm = e.getFrontMatter();
+                        return e.copy().frontMatter(
+                                new FrontMatter(fm.title(), fm.categories(), new Tags(tags), fm.date(), fm.updated()))
+                                .build();
+                    }).ifPresentOrElse(actualEntry -> {
+                assertAll(
+                        () -> assertThat(actualEntry.getEntryId()).isEqualTo(new EntryId("3")),
+                        () -> assertThat(actualEntry.getContent()).isEqualTo(new Content("content3")),
+                        () -> assertThat(actualEntry.getFrontMatter()).isEqualTo(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("tag3")), expectedNow, expectedNow)),
+                        () -> assertThat(actualEntry.getCreated()).isEqualTo(new Author(new Name("author3"), expectedNow)),
+                        () -> assertThat(actualEntry.getUpdated()).isEqualTo(new Author(new Name("updater3"), expectedNow))
+                );
+            }, () -> {
+                fail("entry is not found");
+            });
+        }
     }
+
 
     public void update() {
         Entry entry = Entry.builder().build();

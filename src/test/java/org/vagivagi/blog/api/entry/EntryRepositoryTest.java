@@ -159,7 +159,7 @@ public class EntryRepositoryTest {
             Entry entry = Entry.builder()
                     .entryId(new EntryId("3"))
                     .content(new Content("content3"))
-                    .frontMatter(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("tag3")), now, now))
+                    .frontMatter(new FrontMatter(new Title("title3"), new Categories(new Category("newCategory")), new Tags(new Tag("newTag")), now, now))
                     .created(new Author(new Name("author3"), now))
                     .updated(new Author(new Name("updater3"), now))
                     .build();
@@ -182,6 +182,82 @@ public class EntryRepositoryTest {
                         () -> assertThat(actualEntry.getEntryId()).isEqualTo(new EntryId("3")),
                         () -> assertThat(actualEntry.getContent()).isEqualTo(new Content("content3")),
                         () -> assertThat(actualEntry.getFrontMatter()).isEqualTo(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("tag3")), expectedNow, expectedNow)),
+                        () -> assertThat(actualEntry.getCreated()).isEqualTo(new Author(new Name("author3"), expectedNow)),
+                        () -> assertThat(actualEntry.getUpdated()).isEqualTo(new Author(new Name("updater3"), expectedNow))
+                );
+            }, () -> {
+                fail("entry is not found");
+            });
+        }
+
+        @Test
+        public void success_duplicate_tag() {
+            EventTime now = EventTime.now();
+            EventTime expectedNow = new EventTime(OffsetDateTime.from(now.getValue()).withOffsetSameLocal(ZoneOffset.UTC));
+            Entry entry = Entry.builder()
+                    .entryId(new EntryId("3"))
+                    .content(new Content("content3"))
+                    .frontMatter(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("demo")), now, now))
+                    .created(new Author(new Name("author3"), now))
+                    .updated(new Author(new Name("updater3"), now))
+                    .build();
+            entryRepository.create(entry);
+            jdbcTemplate.query(
+                    "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                            + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                            + " WHERE e.entry_id = 3" + " ORDER BY c.category_order ASC",
+                    EntryExtractors.forEntry(false)) //
+                    .map(e -> {
+                        List<Tag> tags =
+                                jdbcTemplate.query("SELECT tag_name FROM entry_tag WHERE entry_id = 3",
+                                        (rs, i) -> new Tag(rs.getString("tag_name")));
+                        FrontMatter fm = e.getFrontMatter();
+                        return e.copy().frontMatter(
+                                new FrontMatter(fm.title(), fm.categories(), new Tags(tags), fm.date(), fm.updated()))
+                                .build();
+                    }).ifPresentOrElse(actualEntry -> {
+                assertAll(
+                        () -> assertThat(actualEntry.getEntryId()).isEqualTo(new EntryId("3")),
+                        () -> assertThat(actualEntry.getContent()).isEqualTo(new Content("content3")),
+                        () -> assertThat(actualEntry.getFrontMatter()).isEqualTo(new FrontMatter(new Title("title3"), new Categories(new Category("category3")), new Tags(new Tag("tag3")), expectedNow, expectedNow)),
+                        () -> assertThat(actualEntry.getCreated()).isEqualTo(new Author(new Name("author3"), expectedNow)),
+                        () -> assertThat(actualEntry.getUpdated()).isEqualTo(new Author(new Name("updater3"), expectedNow))
+                );
+            }, () -> {
+                fail("entry is not found");
+            });
+        }
+
+        @Test
+        public void success_no_category_no_tag() {
+            EventTime now = EventTime.now();
+            EventTime expectedNow = new EventTime(OffsetDateTime.from(now.getValue()).withOffsetSameLocal(ZoneOffset.UTC));
+            Entry entry = Entry.builder()
+                    .entryId(new EntryId("3"))
+                    .content(new Content("content3"))
+                    .frontMatter(new FrontMatter(new Title("title3"), new Categories(), new Tags(), now, now))
+                    .created(new Author(new Name("author3"), now))
+                    .updated(new Author(new Name("updater3"), now))
+                    .build();
+            entryRepository.create(entry);
+            jdbcTemplate.query(
+                    "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                            + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                            + " WHERE e.entry_id = 3" + " ORDER BY c.category_order ASC",
+                    EntryExtractors.forEntry(false)) //
+                    .map(e -> {
+                        List<Tag> tags =
+                                jdbcTemplate.query("SELECT tag_name FROM entry_tag WHERE entry_id = 3",
+                                        (rs, i) -> new Tag(rs.getString("tag_name")));
+                        FrontMatter fm = e.getFrontMatter();
+                        return e.copy().frontMatter(
+                                new FrontMatter(fm.title(), fm.categories(), new Tags(tags), fm.date(), fm.updated()))
+                                .build();
+                    }).ifPresentOrElse(actualEntry -> {
+                assertAll(
+                        () -> assertThat(actualEntry.getEntryId()).isEqualTo(new EntryId("3")),
+                        () -> assertThat(actualEntry.getContent()).isEqualTo(new Content("content3")),
+                        () -> assertThat(actualEntry.getFrontMatter()).isEqualTo(new FrontMatter(new Title("title3"), new Categories(), new Tags(), expectedNow, expectedNow)),
                         () -> assertThat(actualEntry.getCreated()).isEqualTo(new Author(new Name("author3"), expectedNow)),
                         () -> assertThat(actualEntry.getUpdated()).isEqualTo(new Author(new Name("updater3"), expectedNow))
                 );

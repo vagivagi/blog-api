@@ -267,11 +267,50 @@ public class EntryRepositoryTest {
         }
     }
 
-
-    public void update() {
-        Entry entry = Entry.builder().build();
-        entryRepository.update(entry);
+    @Nested
+    @ExtendWith(SpringExtension.class)
+    @SpringBootTest
+    @Sql("/testfiles/test_data_entry.sql")
+    class update {
+        @Test
+        public void update() {
+            EventTime now = EventTime.now();
+            EventTime expectedNow = new EventTime(OffsetDateTime.from(now.getValue()).withOffsetSameLocal(ZoneOffset.UTC));
+            Entry entry = Entry.builder()
+                    .entryId(new EntryId("1"))
+                    .content(new Content("updatedContent"))
+                    .frontMatter(new FrontMatter(new Title("updatedTitle"), new Categories(), new Tags(), now, now))
+                    .created(new Author(new Name("updatedAuthor"), now))
+                    .updated(new Author(new Name("updatedUpdater"), now))
+                    .build();
+            entryRepository.update(entry);
+            jdbcTemplate.query(
+                    "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                            + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                            + " WHERE e.entry_id = 1" + " ORDER BY c.category_order ASC",
+                    EntryExtractors.forEntry(false)) //
+                    .map(e -> {
+                        List<Tag> tags =
+                                jdbcTemplate.query("SELECT tag_name FROM entry_tag WHERE entry_id = 1",
+                                        (rs, i) -> new Tag(rs.getString("tag_name")));
+                        FrontMatter fm = e.getFrontMatter();
+                        return e.copy().frontMatter(
+                                new FrontMatter(fm.title(), fm.categories(), new Tags(tags), fm.date(), fm.updated()))
+                                .build();
+                    }).ifPresentOrElse(actualEntry -> {
+                assertAll(
+                        () -> assertThat(actualEntry.getEntryId()).isEqualTo(new EntryId("1")),
+                        () -> assertThat(actualEntry.getContent()).isEqualTo(new Content("updatedContent")),
+                        () -> assertThat(actualEntry.getFrontMatter()).isEqualTo(new FrontMatter(new Title("updatedTitle"), new Categories(), new Tags(), expectedNow, expectedNow)),
+                        () -> assertThat(actualEntry.getCreated()).isEqualTo(new Author(new Name("updatedAuthor"), expectedNow)),
+                        () -> assertThat(actualEntry.getUpdated()).isEqualTo(new Author(new Name("updatedUpdater"), expectedNow))
+                );
+            }, () -> {
+                fail("entry is not found");
+            });
+        }
     }
+
 
     public void delete() {
         entryRepository.delete(new EntryId("1"));

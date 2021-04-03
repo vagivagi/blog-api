@@ -316,8 +316,21 @@ public class EntryRepositoryTest {
         entryRepository.delete(new EntryId("1"));
     }
 
-    public void tagsMap() {
-        entryRepository.tagsMap(List.of(1l));
+    @Test
+    public void success_tagsMap_multiple() {
+        entryRepository.tagsMap(List.of(1l)).forEach(
+                (entryId, tags) -> {
+                    assertAll(
+                            () -> assertThat(entryId).isEqualTo(new EntryId(1l)),
+                            () -> assertThat(tags).isEqualTo(new Tags(new Tag("blog"), new Tag("demo")))
+                    );
+                }
+        );
+    }
+
+    @Test
+    public void success_tagsMap_none() {
+        assertThat(entryRepository.tagsMap(List.of(99l)).isEmpty()).isTrue();
     }
 
     private void assertAllForEntry(Entry entry) {

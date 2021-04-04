@@ -312,8 +312,30 @@ public class EntryRepositoryTest {
     }
 
 
-    public void delete() {
+    @Test
+    public void success_delete() {
         entryRepository.delete(new EntryId("1"));
+        jdbcTemplate.query(
+                "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                        + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                        + " WHERE e.entry_id = 1" + " ORDER BY c.category_order ASC",
+                EntryExtractors.forEntry(false)) //
+                .ifPresent(actualEntry -> {
+                    fail("entry is not deleted");
+                });
+    }
+
+    @Test
+    public void success_delete_no_record() {
+        entryRepository.delete(new EntryId("99"));
+        jdbcTemplate.query(
+                "SELECT e.entry_id, e.title, e.content, e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
+                        + " FROM entry AS e LEFT OUTER JOIN category AS c ON e.entry_id = c.entry_id"
+                        + " WHERE e.entry_id = 99" + " ORDER BY c.category_order ASC",
+                EntryExtractors.forEntry(false)) //
+                .ifPresent(actualEntry -> {
+                    fail("entry is not deleted");
+                });
     }
 
     @Test

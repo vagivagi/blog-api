@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TagRepositoryTest {
     @Autowired
-    private EntryRepository entryRepository;
+    private TagRepository tagRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+
 }

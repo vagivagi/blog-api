@@ -29,7 +29,17 @@ public class TagRepositoryTest {
     public void success_findAll() {
         List<Tag> tags = tagRepository.findAll();
         assertAll(
-                () -> assertThat(tags.size()).isEqualTo(4)
+                () -> assertThat(tags.size()).isEqualTo(4),
+                () -> assertThat(tags.get(0)).isEqualTo(new Tag("blog")),
+                () -> assertThat(tags.get(1)).isEqualTo(new Tag("demo")),
+                () -> assertThat(tags.get(2)).isEqualTo(new Tag("food")),
+                () -> assertThat(tags.get(3)).isEqualTo(new Tag("protein"))
         );
+    }
+
+    @Test
+    @Sql("/testfiles/test_data_no_entry.sql")
+    public void success_findAll_no_record() {
+        assertThat(tagRepository.findAll().isEmpty()).isEqualTo(true);
     }
 }

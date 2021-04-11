@@ -1,13 +1,7 @@
 package org.vagivagi.blog.api.entry;
 
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.BDDMockito.*;
-import java.util.Collections;
-import java.util.Optional;
+import am.ik.blog.entry.EntryId;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -19,7 +13,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.vagivagi.blog.api.Fixtures;
 import org.vagivagi.blog.api.entry.criteria.SearchCriteria;
-import am.ik.blog.entry.EntryId;
+
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.BDDMockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(

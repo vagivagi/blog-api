@@ -173,7 +173,7 @@ public class EntryControllerTest {
 
     this.webClient
         .get() //
-        .uri(uriBuilder -> uriBuilder.path("entries").queryParam("q", "Hello").build()) //
+        .uri(uriBuilder -> uriBuilder.path("/entries").queryParam("q", "Hello").build()) //
         .accept(MediaType.APPLICATION_JSON) //
         .exchange() //
         .expectStatus() //

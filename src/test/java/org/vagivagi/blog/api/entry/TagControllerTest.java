@@ -56,4 +56,20 @@ public class TagControllerTest {
                 .jsonPath("$[1].value")
                 .isEqualTo("blog");
     }
+
+    @Test
+    public void getTags_not_found() throws Exception {
+        given(tagRepository.findAll())
+                .willReturn(List.of());
+        this.webClient
+                .get() //
+                .uri("/tags") //
+                .accept(MediaType.APPLICATION_JSON) //
+                .exchange() //
+                .expectStatus() //
+                .isOk() //
+                .expectBody() //
+                .jsonPath("$")
+                .isEmpty();
+    }
 }

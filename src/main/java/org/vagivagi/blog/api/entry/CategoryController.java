@@ -1,12 +1,12 @@
 package org.vagivagi.blog.api.entry;
 
-import java.util.List;
+import am.ik.blog.entry.Categories;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import am.ik.blog.entry.Categories;
 
-//TODO
+import java.util.List;
+
 @RestController
 @CrossOrigin
 public class CategoryController {

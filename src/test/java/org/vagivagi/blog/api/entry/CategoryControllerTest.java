@@ -54,4 +54,20 @@ public class CategoryControllerTest {
                 .isEqualTo("{categories=[\"categories\",\"demo\"]}");
     }
 
+    @Test
+    public void getCategories_not_found() throws Exception {
+        given(categoryRepository.findAll())
+                .willReturn(List.of());
+        this.webClient
+                .get() //
+                .uri("/categories") //
+                .accept(MediaType.APPLICATION_JSON) //
+                .exchange() //
+                .expectStatus() //
+                .isOk() //
+                .expectBody() //
+                .jsonPath("$")
+                .isEmpty();
+    }
+
 }

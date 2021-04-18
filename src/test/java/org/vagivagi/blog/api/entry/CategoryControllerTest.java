@@ -51,7 +51,36 @@ public class CategoryControllerTest {
                 .isOk() //
                 .expectBody() //
                 .jsonPath("$")
-                .isEqualTo("{categories=[\"categories\",\"demo\"]}");
+                .isArray() //
+                .jsonPath("$[0].categories[0]")
+                .isEqualTo("categories")
+                .jsonPath("$[0].categories[1]")
+                .isEqualTo("demo");
+    }
+
+    @Test
+    public void getCategories_multiple_categories() throws Exception {
+        given(categoryRepository.findAll())
+                .willReturn(List.of(new Categories(new Category("categories"), new Category("demo")),
+                        new Categories(new Category("blog"), new Category("foo"))));
+        this.webClient
+                .get() //
+                .uri("/categories") //
+                .accept(MediaType.APPLICATION_JSON) //
+                .exchange() //
+                .expectStatus() //
+                .isOk() //
+                .expectBody() //
+                .jsonPath("$")
+                .isArray() //
+                .jsonPath("$[0].categories[0]")
+                .isEqualTo("categories")
+                .jsonPath("$[0].categories[1]")
+                .isEqualTo("demo")
+                .jsonPath("$[1].categories[0]")
+                .isEqualTo("blog")
+                .jsonPath("$[1].categories[1]")
+                .isEqualTo("foo");
     }
 
     @Test

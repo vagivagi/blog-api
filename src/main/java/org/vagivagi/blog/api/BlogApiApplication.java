@@ -11,21 +11,21 @@ import am.ik.github.GitHubClient;
 @SpringBootApplication
 public class BlogApiApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(BlogApiApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(BlogApiApplication.class, args);
+    }
 
-  @Bean
-  GitHubClient gitHubClient(BlogProperties props, WebClient.Builder builder) {
-    return new GitHubClient(builder, new AccessToken(props.getGithub().getAccessToken()));
-  }
+    @Bean
+    GitHubClient gitHubClient(BlogProperties props, WebClient.Builder builder) {
+        return new GitHubClient(builder, new AccessToken(props.getGithub().getAccessToken()));
+    }
 
-  @Bean
-  ThreadPoolTaskExecutor threadPoolTaskExecutor() {
-    ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-    taskExecutor.setCorePoolSize(4);
-    taskExecutor.setQueueCapacity(25);
-    taskExecutor.setMaxPoolSize(40);
-    return taskExecutor;
-  }
+    @Bean
+    ThreadPoolTaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(4);
+        taskExecutor.setQueueCapacity(25);
+        taskExecutor.setMaxPoolSize(40);
+        return taskExecutor;
+    }
 }

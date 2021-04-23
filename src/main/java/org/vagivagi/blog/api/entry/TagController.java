@@ -1,22 +1,23 @@
 package org.vagivagi.blog.api.entry;
 
-import java.util.List;
+import am.ik.blog.entry.Tag;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import am.ik.blog.entry.Tag;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin
 public class TagController {
-  private final TagRepository tagRepository;
+    private final TagRepository tagRepository;
 
-  public TagController(TagRepository tagRepository) {
-    this.tagRepository = tagRepository;
-  }
+    public TagController(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
-  @GetMapping("tags")
-  public List<Tag> getCategories() {
-    return tagRepository.findAll();
-  }
+    @GetMapping("tags")
+    public List<Tag> getCategories() {
+        return tagRepository.findAll();
+    }
 }

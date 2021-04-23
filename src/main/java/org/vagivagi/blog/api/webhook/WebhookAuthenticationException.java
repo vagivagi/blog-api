@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
  */
 public class WebhookAuthenticationException extends ResponseStatusException {
 
-  public WebhookAuthenticationException(String expected, String actual) {
-    super(HttpStatus.FORBIDDEN, String.format("Could not verify signature: '%s'", actual));
-  }
+    public WebhookAuthenticationException(String expected, String actual) {
+        super(HttpStatus.FORBIDDEN, String.format("Could not verify signature: '%s'", actual));
+    }
 }

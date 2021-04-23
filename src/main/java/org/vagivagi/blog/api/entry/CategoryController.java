@@ -10,14 +10,14 @@ import java.util.List;
 @RestController
 @CrossOrigin
 public class CategoryController {
-  private final CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
 
-  public CategoryController(CategoryRepository categoryRepository) {
-    this.categoryRepository = categoryRepository;
-  }
+    public CategoryController(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
-  @GetMapping("categories")
-  public List<Categories> getCategories() {
-    return categoryRepository.findAll();
-  }
+    @GetMapping("categories")
+    public List<Categories> getCategories() {
+        return categoryRepository.findAll();
+    }
 }

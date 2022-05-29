@@ -101,7 +101,7 @@ public class EntryRepositoryTest {
                 + ", e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
                 + " FROM entry AS e LEFT JOIN category AS c ON e.entry_id = c.entry_id "
                 + " WHERE e.entry_id IN (:entry_ids)"
-                + " ORDER BY e.last_modified_date DESC, e.entry_id DESC, c.category_order ASC");
+                + " ORDER BY e.created_date DESC, e.entry_id DESC, c.category_order ASC");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class EntryRepositoryTest {
                 + ", e.created_by, e.created_date, e.last_modified_by, e.last_modified_date, c.category_name"
                 + " FROM entry AS e LEFT JOIN category AS c ON e.entry_id = c.entry_id "
                 + " WHERE e.entry_id IN (:entry_ids)"
-                + " ORDER BY e.last_modified_date DESC, e.entry_id DESC, c.category_order ASC");
+                + " ORDER BY e.created_date DESC, e.entry_id DESC, c.category_order ASC");
     }
 
     @Nested
